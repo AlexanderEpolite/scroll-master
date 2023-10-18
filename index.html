@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" id="html">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Scroll Master</title>
+        <style>
+            body {
+                width: 100%;
+                height: 100%;
+            }
+            
+        </style>
+        <style>
+            #message {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                background-color: #f1f1f1;
+                padding: 10px;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <br><br><br>
+        <p id="message" hidden>GO!  Game will stop automatically once you stop moving</p>
+        <h1>SCROLL MASTER</h1>
+        <h2>This game is for mice that keep scrolling after they are let go (such as the Logitech G502)</h2>
+        <p>
+            On Windows, set mouse to scroll one screen at a time (this is what the leaderboard scores are based on)<br>
+            Should be 885px per scroll<br>
+        </p>
+        <img src="/windows_mouse_settings.png" alt="Windows mouse settings"><br>
+        <button onclick="start();">START GAME!</button>
+        <ul>Records
+            <li><a href="https://github.com/AlexanderEpolite">AlexanderEpolite</a>: 2,324,975 (Logitech G502-HERO)</li>
+        </ul>
+    </body>
+    <script>
+        
+        function commafy(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        
+        let playing = false;
+        
+        function start() {
+            if (playing) return;
+            playing = true;
+            //change the body height to 500,000%
+            document.getElementById("html").style.height = "1000000%";
+            document.getElementById("message").hidden = false;
+            document.getElementById("message").style.display = "fixed";
+            let currentHeight = 0;
+            let prevHeight = 0;
+            let sameHeightCount = 0;
+            
+            //set height to 0
+            window.scrollTo(0, 0);
+            
+            let a = setInterval(() => {
+                if (currentHeight === prevHeight) {
+                    sameHeightCount++;
+                    if (sameHeightCount === 2 && currentHeight !== 0) {
+                        document.getElementById("message").innerHTML = `<h1>FINISHED!  Your score is ${commafy(currentHeight.toFixed(0))}</h1>`;
+                        clearInterval(i);
+                        clearInterval(a);
+                        document.getElementById("html").style.height = "100%";
+                        playing = false;
+                    }
+                } else {
+                    sameHeightCount = 0;
+                }
+                prevHeight = currentHeight;
+            }, 1000);
+            
+            let i = setInterval(() => {
+                currentHeight = window.pageYOffset;
+                
+                if(currentHeight < prevHeight && currentHeight > 100) {
+                    //if user scrolls up (don't count the first 100px)
+                    alert("Do not scroll up after you start!");
+                    location.reload();
+                }
+                
+                document.getElementById("message").innerHTML = `SCORE: ${commafy(currentHeight.toFixed(0))}`;
+            }, 1);
+        }
+        
+        //TODO: add velocity checking to prevent cheating
+    </script>
+</html>
+
